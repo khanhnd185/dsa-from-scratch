@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.html": "html",
+        "TODO": "markdown",
+        "linked_list.h": "c"
+    }
+}
