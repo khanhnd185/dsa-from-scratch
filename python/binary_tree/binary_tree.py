@@ -1,5 +1,9 @@
 from collections import deque
+from typing import List
 
+'''
+Definition
+'''
 class Node(object):
     def __init__(self, val=0, left=None, right=None, parent=None):
         self.val = val
@@ -9,6 +13,10 @@ class Node(object):
         if left: left.parent = self
         if right: right.parent = self
 
+
+'''
+Recursive functions
+'''
 def subtree_first(node : Node) -> Node:
     if node.left: return subtree_first(node.left)
     return node
@@ -53,13 +61,46 @@ def subtree_delete(node: Node):
         subtree_delete(suc)
 
 def subtree_sorted_find(node: Node, k):
-    if node is None: return None
-    if k <  node.val: subtree_sorted_find(node.left, k)
+    if node is None : return None
+    if k <  node.val: return subtree_sorted_find(node.left, k)
     if k == node.val: return node
-    if k >  node.val: subtree_sorted_find(node.right, k)
+    if k >  node.val: return subtree_sorted_find(node.right, k)
 
 
-def get_tree_from_preorder(l):
+def print_tree_inorder(root: Node):
+    if not root: return
+    print_tree_inorder(root.left)
+    print(root.val, end=" ")
+    print_tree_inorder(root.right)
+    print()
+
+
+def bst_from_sorted_array(l : list[int]) -> Node:
+    if len(l)==0: return None
+    start = 0
+    end   = len(l)-1
+
+    mid   = (end-start)//2
+    root  = Node(val=l[mid])
+    root.left  = bst_from_sorted_array(l[:mid])
+    root.right = bst_from_sorted_array(l[mid+1:])
+    return root
+
+
+'''
+Level-order traversal - BFS
+'''
+def print_tree_level_order(root: Node):
+    if not root: return
+    q = deque([root])
+    while q:
+        n = q.popleft()
+        print(n.val, end=" ")
+        if n.left : q.append(n.left)
+        if n.right: q.append(n.right)
+    print()
+
+def get_tree_from_level_order(l):
     if not l: return None
     root = Node(val=l[0])
     q = deque([root])
@@ -80,15 +121,28 @@ def get_tree_from_preorder(l):
         i +=1
     return root
 
-def print_tree_inorder(root: Node):
-    if not root: return
-    print_tree_inorder(root.left)
-    print(root.val, end=" ")
-    print_tree_inorder(root.right)
+def get_level_order_value(root : Node) -> list[int]:
+    if not root: return []
+    ret = []
+    q  = deque([root])
+    while q:
+        a = []
+        l = len(q)
+        for _ in range(l):
+            node  = q.popleft()
+            a.append(node.val)
+            if node.left : q.append(node.left)
+            if node.right: q.append(node.right)
+        ret.append(a)
+    return ret
 
 
-def example1(tree):
-    root = get_tree_from_preorder(tree)
+
+'''
+Examples
+'''
+def example1(tree : Node):
+    root = get_tree_from_level_order(tree)
     print_tree_inorder(root)
 
 def example2():
@@ -110,18 +164,15 @@ def example2():
     n5 = Node(val=5)
     subtree_insert_after(root, n5)
     print_tree_inorder(root)
-    print()
 
     # Insert another node
     n7 = Node(val=7)
     subtree_insert_after(n6, n7)
     print_tree_inorder(root)
-    print()
 
     # Delete a node
     subtree_delete(n2)
     print_tree_inorder(root)
-    print()
 
 
 
